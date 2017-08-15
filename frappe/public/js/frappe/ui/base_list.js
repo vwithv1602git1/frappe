@@ -173,7 +173,7 @@ frappe.ui.BaseList = Class.extend({
 		// default filter for submittable doctype
 		if (frappe.model.is_submittable(this.doctype)) {
 			this.filter_list.add_filter(this.doctype, "docstatus", "!=", 2);
-		}
+		};
 	},
 
 	clear: function () {
@@ -185,11 +185,9 @@ frappe.ui.BaseList = Class.extend({
 		this.onreset && this.onreset();
 	},
 
-	set_filters_from_route_options: function ({clear_filters=true} = {}) {
+	set_filters_from_route_options: function () {
 		var me = this;
-		if(clear_filters) {
-			this.filter_list.clear_filters();
-		}
+		this.filter_list.clear_filters();
 
 		for(var field in frappe.route_options) {
 			var value = frappe.route_options[field];

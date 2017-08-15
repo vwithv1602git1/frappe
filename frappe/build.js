@@ -25,7 +25,7 @@ const action = process.argv[2] || '--build';
 
 if (['--build', '--watch'].indexOf(action) === -1) {
 	console.log('Invalid argument: ', action);
-	process.exit();
+	return;
 }
 
 if (action === '--build') {
@@ -272,6 +272,7 @@ function watch_js(ondirty) {
 			if (sources.includes(filename)) {
 				pack(target, sources);
 				ondirty && ondirty(target);
+				break;
 			}
 		}
 	});

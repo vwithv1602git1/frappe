@@ -220,21 +220,22 @@ class TestUser(unittest.TestCase):
 		clear_limit('users')
 
 	def test_password_strength(self):
-		# Test Password without Password Strenth Policy
+		#Test Password without Password Strenth Policy
 		frappe.db.set_value("System Settings", "System Settings", "enable_password_policy", 0)
+		frappe.db.set_value("System Settings", "System Settings", "minimum_password_score", "")
 
-		# password policy is disabled, test_password_strength should be ignored
+		# Should pass password strength test
 		result = test_password_strength("test_password")
-		self.assertFalse(result.get("feedback", None))
+		self.assertEqual(result['feedback']['password_policy_validation_passed'], True)
 
 		# Test Password with Password Strenth Policy Set
 		frappe.db.set_value("System Settings", "System Settings", "enable_password_policy", 1)
 		frappe.db.set_value("System Settings", "System Settings", "minimum_password_score", 2)
 
-		# Score 1; should now fail
-		result = test_password_strength("bee2ve")
+		#Should fail password strength test
+		result = test_password_strength("test_password")
 		self.assertEqual(result['feedback']['password_policy_validation_passed'], False)
 
-		# Score 4; should pass
+		# Should pass password strength test
 		result = test_password_strength("Eastern_43A1W")
 		self.assertEqual(result['feedback']['password_policy_validation_passed'], True)

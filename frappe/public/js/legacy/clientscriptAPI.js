@@ -1,11 +1,12 @@
 // Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
 // MIT License. See license.txt
 
-window.get_server_fields = function(method, arg, table_field, doc, dt, dn, allow_edit, call_back) {
+get_server_fields = function(method, arg, table_field, doc, dt, dn, allow_edit, call_back) {
 	console.warn("This function 'get_server_fields' has been deprecated and will be removed soon.");
 	frappe.dom.freeze();
 	if($.isPlainObject(arg)) arg = JSON.stringify(arg);
-	return $c('runserverobj', {'method': method, 'docs': JSON.stringify(doc), 'arg': arg },
+	return $c('runserverobj',
+		args={'method': method, 'docs': JSON.stringify(doc), 'arg': arg },
 	function(r, rt) {
 		frappe.dom.unfreeze();
 		if (r.message)  {
@@ -23,11 +24,12 @@ window.get_server_fields = function(method, arg, table_field, doc, dt, dn, allow
 			doc = locals[doc.doctype][doc.name];
 			call_back(doc, dt, dn);
 		}
-	});
+    }
+  );
 }
 
 
-window.set_multiple = function (dt, dn, dict, table_field) {
+set_multiple = function (dt, dn, dict, table_field) {
 	var d = locals[dt][dn];
 	for(var key in dict) {
 		d[key] = dict[key];
@@ -38,7 +40,7 @@ window.set_multiple = function (dt, dn, dict, table_field) {
 	}
 }
 
-window.refresh_many = function (flist, dn, table_field) {
+refresh_many = function (flist, dn, table_field) {
 	for(var i in flist) {
 		if (table_field)
 			refresh_field(flist[i], dn, table_field);
@@ -47,7 +49,7 @@ window.refresh_many = function (flist, dn, table_field) {
 	}
 }
 
-window.set_field_tip = function(n,txt) {
+set_field_tip = function(n,txt) {
 	var df = frappe.meta.get_docfield(cur_frm.doctype, n, cur_frm.docname);
 	if(df)df.description = txt;
 
@@ -82,11 +84,11 @@ refresh_field = function(n, docname, table_field) {
 	}
 }
 
-window.set_field_options = function(n, txt) {
+set_field_options = function(n, txt) {
 	cur_frm.set_df_property(n, 'options', txt)
 }
 
-window.set_field_permlevel = function(n, level) {
+set_field_permlevel = function(n, level) {
 	cur_frm.set_df_property(n, 'permlevel', level)
 }
 
@@ -159,7 +161,7 @@ _f.Frm.prototype.set_currency_labels = function(fields_list, currency, parentfie
 _f.Frm.prototype.field_map = function(fnames, fn) {
 	if(typeof fnames==='string') {
 		if(fnames == '*') {
-			fnames = Object.keys(this.fields_dict);
+			fnames = keys(this.fields_dict);
 		} else {
 			fnames = [fnames];
 		}
@@ -170,7 +172,7 @@ _f.Frm.prototype.field_map = function(fnames, fn) {
 		if(field) {
 			fn(field);
 			cur_frm.refresh_field(fieldname);
-		}
+		};
 	}
 }
 
@@ -190,14 +192,14 @@ _f.Frm.prototype.set_df_property = function(fieldname, property, value, docname,
 		var df = this.get_docfield(fieldname);
 	} else {
 		var grid = cur_frm.fields_dict[table_field].grid,
-			fname = frappe.utils.filter_dict(grid.docfields, {'fieldname': fieldname});
+		fname = frappe.utils.filter_dict(grid.docfields, {'fieldname': fieldname});
 		if (fname && fname.length)
 			var df = frappe.meta.get_docfield(fname[0].parent, fieldname, docname);
 	}
 	if(df && df[property] != value) {
 		df[property] = value;
 		refresh_field(fieldname, table_field);
-	}
+	};
 }
 
 _f.Frm.prototype.toggle_enable = function(fnames, enable) {
@@ -277,7 +279,7 @@ _f.Frm.prototype.set_value = function(field, value, if_missing) {
 				}
 			}
 		} else {
-			frappe.msgprint(__("Field {0} not found.",[f]));
+			msgprint("Field " + f + " not found.");
 			throw "frm.set_value";
 		}
 	}
@@ -316,7 +318,7 @@ _f.Frm.prototype.call = function(opts, args, callback) {
 					opts.child = locals[opts.child.doctype][opts.child.name];
 
 					var std_field_list = ["doctype"].concat(frappe.model.std_fields_list);
-					for (var key in r.message) {
+					for (key in r.message) {
 						if (std_field_list.indexOf(key)===-1) {
 							opts.child[key] = r.message[key];
 						}
@@ -407,7 +409,6 @@ _f.Frm.prototype.has_mapper = function() {
 
 _f.Frm.prototype.set_indicator_formatter = function(fieldname, get_color, get_text) {
 	// get doctype from parent
-	var doctype;
 	if(frappe.meta.docfield_map[this.doctype][fieldname]) {
 		doctype = this.doctype;
 	} else {
@@ -471,7 +472,7 @@ _f.Frm.prototype.make_new = function(doctype) {
 		this.custom_buttons[this.custom_make_buttons[doctype]].trigger('click');
 	} else {
 		frappe.model.with_doctype(doctype, function() {
-			var new_doc = frappe.model.get_new_doc(doctype);
+			new_doc = frappe.model.get_new_doc(doctype);
 
 			// set link fields (if found)
 			frappe.get_meta(doctype).fields.forEach(function(df) {

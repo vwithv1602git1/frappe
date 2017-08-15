@@ -5,8 +5,6 @@ from __future__ import unicode_literals, print_function
 from frappe.utils.minify import JavascriptMinify
 import subprocess
 
-from six import iteritems
-
 """
 Build the `public` folders and setup languages
 """
@@ -89,7 +87,7 @@ def make_asset_dirs(make_copy=False):
 def build(no_compress=False, verbose=False):
 	assets_path = os.path.join(frappe.local.sites_path, "assets")
 
-	for target, sources in iteritems(get_build_maps()):
+	for target, sources in get_build_maps().iteritems():
 		pack(os.path.join(assets_path, target), sources, no_compress, verbose)
 
 def get_build_maps():
@@ -102,7 +100,7 @@ def get_build_maps():
 		if os.path.exists(path):
 			with open(path) as f:
 				try:
-					for target, sources in iteritems(json.loads(f.read())):
+					for target, sources in json.loads(f.read()).iteritems():
 						# update app path
 						source_paths = []
 						for source in sources:
@@ -184,7 +182,7 @@ def scrub_html_template(content):
 	return content.replace("'", "\'")
 
 def files_dirty():
-	for target, sources in iteritems(get_build_maps()):
+	for target, sources in get_build_maps().iteritems():
 		for f in sources:
 			if ':' in f: f, suffix = f.split(':')
 			if not os.path.exists(f) or os.path.isdir(f): continue

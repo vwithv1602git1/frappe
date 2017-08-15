@@ -3,8 +3,6 @@
 
 from __future__ import unicode_literals
 import frappe, re, os
-from six import iteritems
-
 
 def delete_page_cache(path):
 	cache = frappe.cache()
@@ -192,7 +190,7 @@ def get_full_index(route=None, app=None):
 		pages = get_pages(app=app)
 
 		# make children map
-		for route, page_info in iteritems(pages):
+		for route, page_info in pages.iteritems():
 			parent_route = os.path.dirname(route)
 			children_map.setdefault(parent_route, []).append(page_info)
 

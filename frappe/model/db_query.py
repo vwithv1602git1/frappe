@@ -2,9 +2,6 @@
 # MIT License. See license.txt
 
 from __future__ import unicode_literals
-
-from six import iteritems
-
 """build query for doclistview and return results"""
 
 import frappe, json, copy
@@ -174,7 +171,7 @@ class DatabaseQuery(object):
 			if isinstance(filters, dict):
 				fdict = filters
 				filters = []
-				for key, value in iteritems(fdict):
+				for key, value in fdict.iteritems():
 					filters.append(make_filter_tuple(self.doctype, key, value))
 			setattr(self, filter_name, filters)
 

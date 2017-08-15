@@ -1,7 +1,7 @@
 frappe.listview_settings['ToDo'] = {
 	onload: function(me) {
 		frappe.route_options = {
-			"owner": frappe.session.user,
+			"owner": user,
 			"status": "Open"
 		};
 		me.page.set_title(__("To Do"));
@@ -14,7 +14,7 @@ frappe.listview_settings['ToDo'] = {
 			var assign_filter = me.filter_list.get_filter("assigned_by");
 			assign_filter && assign_filter.remove(true);
 
-			me.filter_list.add_filter(me.doctype, "owner", '=', frappe.session.user);
+			me.filter_list.add_filter(me.doctype, "owner", '=', user);
 			me.run();
 		});
 
@@ -23,7 +23,7 @@ frappe.listview_settings['ToDo'] = {
 			var assign_filter = me.filter_list.get_filter("owner");
 			assign_filter && assign_filter.remove(true);
 
-			me.filter_list.add_filter(me.doctype, "assigned_by", '=', frappe.session.user);
+			me.filter_list.add_filter(me.doctype, "assigned_by", '=', user);
 			me.run();
 		}, ".assigned-to-me");
 	},

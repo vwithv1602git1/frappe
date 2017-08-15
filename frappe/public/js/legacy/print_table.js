@@ -141,7 +141,7 @@ frappe.printTable = Class.extend({
 		// get from doctype and redistribute to fit 100%
 		if(!this.widths) {
 			this.widths = $.map(this.columns, function(fieldname, ci) {
-				var df = frappe.meta.docfield_map[me.tabletype][fieldname];
+				df = frappe.meta.docfield_map[me.tabletype][fieldname];
 				return df && df.print_width || (fieldname=="Sr" ? 30 : 80);
 			});
 
@@ -192,7 +192,7 @@ frappe.printTable = Class.extend({
 	},
 })
 
-window.print_table = function print_table(dt, dn, fieldname, tabletype, cols, head_labels, widths, condition, cssClass, modifier) {
+function print_table(dt, dn, fieldname, tabletype, cols, head_labels, widths, condition, cssClass, modifier) {
 	return new frappe.printTable({
 		doctype: dt,
 		docname: dn,

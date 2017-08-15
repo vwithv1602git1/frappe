@@ -305,45 +305,26 @@ def console(context):
 def run_tests(context, app=None, module=None, doctype=None, test=(), driver=None, profile=False, junit_xml_output=False):
 	"Run tests"
 	import frappe.test_runner
+	from frappe.utils import sel
 	tests = test
 
 	site = get_site(context)
 	frappe.init(site=site)
 
-	ret = frappe.test_runner.main(app, module, doctype, context.verbose, tests=tests,
-		force=context.force, profile=profile, junit_xml_output=junit_xml_output)
-	if len(ret.failures) == 0 and len(ret.errors) == 0:
-		ret = 0
+	if frappe.conf.run_selenium_tests and False:
+		sel.start(context.verbose, driver)
 
-	if os.environ.get('CI'):
-		sys.exit(ret)
+	try:
+		ret = frappe.test_runner.main(app, module, doctype, context.verbose, tests=tests,
+			force=context.force, profile=profile, junit_xml_output=junit_xml_output)
+		if len(ret.failures) == 0 and len(ret.errors) == 0:
+			ret = 0
+	finally:
+		pass
+		if frappe.conf.run_selenium_tests:
+			sel.close()
 
-@click.command('run-ui-tests')
-@click.option('--app', help="App to run tests on, leave blank for all apps")
-@click.option('--ci', is_flag=True, default=False, help="Run in CI environment")
-@pass_context
-def run_ui_tests(context, app=None, ci=False):
-	"Run UI tests"
-	import subprocess
-
-	site = get_site(context)
-	frappe.init(site=site)
-
-	if app is None:
-		app = ",".join(frappe.get_installed_apps())
-
-	cmd = [
-		'./node_modules/.bin/nightwatch',
-		'--config', './apps/frappe/frappe/nightwatch.js',
-		'--app', app,
-		'--site', site
-	]
-
-	if ci:
-		cmd.extend(['--env', 'ci_server'])
-
-	bench_path = frappe.utils.get_bench_path()
-	subprocess.call(cmd, cwd=bench_path)
+	sys.exit(ret)
 
 @click.command('serve')
 @click.option('--port', default=8000)
@@ -478,7 +459,6 @@ commands = [
 	request,
 	reset_perms,
 	run_tests,
-	run_ui_tests,
 	serve,
 	set_config,
 	watch,

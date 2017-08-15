@@ -2,7 +2,6 @@ from __future__ import print_function
 import requests
 import json
 import frappe
-from six import iteritems
 
 '''
 FrappeClient is a library that helps you connect with other frappe systems
@@ -38,7 +37,6 @@ class FrappeClient(object):
 		if r.status_code==200 and r.json().get('message') == "Logged In":
 			return r.json()
 		else:
-			print(r.text)
 			raise AuthError
 
 	def logout(self):
@@ -271,7 +269,7 @@ class FrappeClient(object):
 
 	def preprocess(self, params):
 		"""convert dicts, lists to json"""
-		for key, value in iteritems(params):
+		for key, value in params.iteritems():
 			if isinstance(value, (dict, list)):
 				params[key] = json.dumps(value)
 

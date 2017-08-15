@@ -54,14 +54,18 @@ frappe.ui.form.Layout = Class.extend({
 			this.make_section();
 		}
 		$.each(this.fields, function(i, df) {
-			if(df.fieldtype === "Fold") {
-				me.make_page(df);
-			} else if (df.fieldtype === "Section Break") {
-				me.make_section(df);
-			} else if (df.fieldtype === "Column Break") {
-				me.make_column(df);
-			} else {
-				me.make_field(df);
+			switch(df.fieldtype) {
+				case "Fold":
+					me.make_page(df);
+					break;
+				case "Section Break":
+					me.make_section(df);
+					break;
+				case "Column Break":
+					me.make_column(df);
+					break;
+				default:
+					me.make_field(df);
 			}
 		});
 
@@ -221,7 +225,7 @@ frappe.ui.form.Layout = Class.extend({
 				if(me.frm) {
 					fieldobj.perm = me.frm.perm;
 				}
-			}
+			};
 			refresh && fieldobj.refresh && fieldobj.refresh();
 		}
 	},
@@ -245,7 +249,7 @@ frappe.ui.form.Layout = Class.extend({
 	},
 	handle_tab: function(doctype, fieldname, shift) {
 		var me = this,
-			grid_row = null,
+			grid_row = null;
 			prev = null,
 			fields = me.fields_list,
 			in_grid = false,
@@ -353,7 +357,7 @@ frappe.ui.form.Layout = Class.extend({
 		// build dependants' dictionary
 		var has_dep = false;
 
-		for(var fkey in this.fields_list) {
+		for(fkey in this.fields_list) {
 			var f = this.fields_list[fkey];
 			f.dependencies_clear = true;
 			if(f.df.depends_on) {
@@ -405,7 +409,7 @@ frappe.ui.form.Layout = Class.extend({
 
 		if(expression.substr(0,5)=='eval:') {
 			out = eval(expression.substr(5));
-		} else if(expression.substr(0,3)=='fn:' && this.frm) {
+		} else if(expression.substr(0,3)=='fn:' && me.frm) {
 			out = this.frm.script_manager.trigger(expression.substr(3), this.doctype, this.docname);
 		} else {
 			var value = doc[expression];

@@ -34,7 +34,7 @@ _p.go = function(html) {
 _p.preview = function(html) {
 	var w = window.open();
 	if(!w) {
-		frappe.msgprint(__("Please enable pop-ups"));
+		msgprint(__("Please enable pop-ups"));
 		return;
 	}
 	w.document.write(html);
@@ -113,7 +113,7 @@ $.extend(_p, {
 			fmtname= "Standard";
 		}
 
-		var args = {
+		args = {
 			fmtname: fmtname,
 			onload: onload,
 			no_letterhead: no_letterhead,
@@ -121,12 +121,12 @@ $.extend(_p, {
 		};
 
 		if(!cur_frm) {
-			frappe.msgprint(__("No document selected"));
+			msgprint(__("No document selected"));
 			return;
 		}
 
 		if(!frappe.model.can_print(cur_frm.doctype, cur_frm)) {
-			frappe.msgprint(__("You are not allowed to print this document"));
+			msgprint(__("You are not allowed to print this document"));
 			return;
 		}
 
@@ -145,7 +145,7 @@ $.extend(_p, {
 		} else {
 			var print_format_doc = locals["Print Format"][args.fmtname];
 			if(!print_format_doc) {
-				frappe.msgprint(__("Unknown Print Format: {0}", [args.fmtname]));
+				msgprint(__("Unknown Print Format: {0}", [args.fmtname]));
 				return;
 			}
 			args.onload(_p.render({
@@ -220,7 +220,7 @@ $.extend(_p, {
 		}
 
 		if(args.doc && cint(args.doc.docstatus)==0 && is_doctype_submittable) {
-			var draft = _p.head_banner_format();
+			draft = _p.head_banner_format();
 			draft = draft.replace("{{HEAD}}", "DRAFT");
 			draft = draft.replace("{{DESCRIPTION}}", "This box will go away after the document is submitted.");
 			return draft;
@@ -236,7 +236,7 @@ $.extend(_p, {
 	*/
 	show_archived: function(args) {
 		if(args.doc && args.doc.__archived) {
-			var archived = _p.head_banner_format();
+			archived = _p.head_banner_format();
 			archived = archived.replace("{{HEAD}}", "ARCHIVED");
 			archived = archived.replace("{{DESCRIPTION}}", "You must restore this document to make it editable.");
 			return archived;
@@ -252,7 +252,7 @@ $.extend(_p, {
 	*/
 	show_cancelled: function(args) {
 		if(args.doc && args.doc.docstatus==2) {
-			var cancelled = _p.head_banner_format();
+			cancelled = _p.head_banner_format();
 			cancelled = cancelled.replace("{{HEAD}}", "CANCELLED");
 			cancelled = cancelled.replace("{{DESCRIPTION}}", "You must amend this document to make it editable.");
 			return cancelled;
@@ -267,7 +267,7 @@ $.extend(_p, {
 		var body_style = '';
 		var style_list = container.getElementsByTagName('style');
 		while(style_list && style_list.length>0) {
-			for(var i in style_list) {
+			for(i in style_list) {
 				if(style_list[i] && style_list[i].innerHTML) {
 					body_style += style_list[i].innerHTML;
 					var parent = style_list[i].parentNode;
@@ -282,7 +282,7 @@ $.extend(_p, {
 		}
 
 		// Concatenate all styles
-		var style_concat =  (args.only_body ? '' : _p.def_print_style_body)
+		style_concat =  (args.only_body ? '' : _p.def_print_style_body)
 				+ _p.def_print_style_other + args.style + body_style;
 
 		return style_concat;
@@ -625,7 +625,7 @@ $.extend(_p, {
 			// If only one table is passed
 			layout.cur_cell.appendChild(t);
 		} else {
-			var page_break = '\n\
+			page_break = '\n\
 				<div style = "page-break-after: always;" \
 				class = "page_break"></div><div class="page-settings"></div>';
 
@@ -662,7 +662,7 @@ $.extend(_p, {
 				// If value or a numeric type then proceed
 
 				// Add field table
-				var row = _p.field_tab(layout.cur_cell);
+				row = _p.field_tab(layout.cur_cell);
 
 				// Add label
 				row.cells[0].innerHTML = __(f.label ? f.label : f.fieldname);

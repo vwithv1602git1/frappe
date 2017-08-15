@@ -15,7 +15,7 @@ $.extend(frappe.model, {
 			name: frappe.model.get_new_name(doctype),
 			__islocal: 1,
 			__unsaved: 1,
-			owner: frappe.session.user
+			owner: user
 		};
 		frappe.model.set_default_values(doc, parent_doc);
 
@@ -103,8 +103,7 @@ $.extend(frappe.model, {
 					updated.push(f.fieldname);
 				} else if(f.fieldtype == "Select" && f.options && typeof f.options === 'string'
 					&& !in_list(["[Select]", "Loading..."], f.options)) {
-
-					doc[f.fieldname] = f.options.split("\n")[0];
+						doc[f.fieldname] = f.options.split("\n")[0];
 				}
 			}
 		}
@@ -141,7 +140,7 @@ $.extend(frappe.model, {
 
 			if(!df.ignore_user_permissions) {
 				// 2 - look in user defaults
-				var user_defaults = frappe.defaults.get_user_defaults(df.options);
+				user_defaults = frappe.defaults.get_user_defaults(df.options);
 				if (user_defaults && user_defaults.length===1) {
 					// Use User Permission value when only when it has a single value
 					user_default = user_defaults[0];
@@ -172,13 +171,13 @@ $.extend(frappe.model, {
 				return frappe.session.user;
 
 			} else if (df["default"] == "user_fullname") {
-				return frappe.session.user_fullname;
+				return user_fullname;
 
 			} else if (df["default"] == "Today") {
-				return frappe.datetime.get_today();
+				return dateutil.get_today();
 
 			} else if ((df["default"] || "").toLowerCase() === "now") {
-				return frappe.datetime.now_datetime();
+				return dateutil.now_datetime();
 
 			} else if (df["default"][0]===":") {
 				var boot_doc = frappe.model.get_default_from_boot_docs(df, doc, parent_doc);
@@ -199,7 +198,7 @@ $.extend(frappe.model, {
 			}
 
 		} else if (df.fieldtype=="Time") {
-			return frappe.datetime.now_time();
+			return dateutil.now_time();
 		}
 	},
 
@@ -253,23 +252,20 @@ $.extend(frappe.model, {
 			// dont copy name and blank fields
 			var df = frappe.meta.get_docfield(doc.doctype, key);
 
-			if (df && key.substr(0, 2) != '__'
+			if(df && key.substr(0,2)!='__'
 				&& !in_list(no_copy_list, key)
-				&& !(df && (!from_amend && cint(df.no_copy) == 1))) {
-
-				var value = doc[key] || [];
-				if (df.fieldtype === "Table") {
-					for (var i = 0, j = value.length; i < j; i++) {
-						var d = value[i];
-						frappe.model.copy_doc(d, from_amend, newdoc, df.fieldname);
+				&& !(df && (!from_amend && cint(df.no_copy)==1))) {
+					var value = doc[key] || [];
+					if(df.fieldtype==="Table") {
+						for(var i=0, j=value.length; i<j; i++) {
+							var d = value[i];
+							frappe.model.copy_doc(d, from_amend, newdoc, df.fieldname);
+						}
+					} else {
+						newdoc[key] = doc[key];
 					}
-				} else {
-					newdoc[key] = doc[key];
-				}
 			}
 		}
-
-		var user = frappe.session.user;
 
 		newdoc.__islocal = 1;
 		newdoc.docstatus = 0;
@@ -313,19 +309,12 @@ $.extend(frappe.model, {
 
 frappe.create_routes = {};
 frappe.new_doc = function (doctype, opts) {
-	if(opts && $.isPlainObject(opts)) { frappe.route_options = opts; }
+	if(opts && $.isPlainObject(opts)) { frappe.route_options = opts; };
 	frappe.model.with_doctype(doctype, function() {
 		if(frappe.create_routes[doctype]) {
 			frappe.set_route(frappe.create_routes[doctype]);
 		} else {
-			var trimmed_doctype = doctype.replace(/ /g, '');
-			var controller_name = "QuickEntryForm";
-
-			if(frappe.ui.form[trimmed_doctype + "QuickEntryForm"]){
-				controller_name = trimmed_doctype + "QuickEntryForm";
-			}
-
-			new frappe.ui.form[controller_name](doctype, function(doc) {
+			frappe.ui.form.quick_entry(doctype, function(doc) {
 				//frappe.set_route('List', doctype);
 				var title = doc.name;
 				var title_field = frappe.get_meta(doc.doctype).title_field;
@@ -341,5 +330,8 @@ frappe.new_doc = function (doctype, opts) {
 		}
 	});
 }
+
+// globals for backward compatibility
+window.new_doc = frappe.new_doc;
 
 

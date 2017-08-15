@@ -128,12 +128,6 @@ def get_data():
 					"description": _("List of backups available for download"),
 					"icon": "fa fa-download"
 				},
-				{
-					"type": "doctype",
-					"name": "Deleted Document",
-					"label": _("Deleted Documents"),					
-					"description": _("Restore or permanently delete a document.")
-				},
 			]
 		},
 		{
@@ -173,7 +167,7 @@ def get_data():
 			"items": [
 				{
 					"type": "page",
-					"label": _("Print Format Builder"),
+					"label": "Print Format Builder",
 					"name": "print-format-builder",
 					"description": _("Drag and Drop tool to build and customize Print Formats.")
 				},

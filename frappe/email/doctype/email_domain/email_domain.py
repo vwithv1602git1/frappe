@@ -4,7 +4,6 @@
 
 from __future__ import unicode_literals
 import frappe
-from frappe import _
 from frappe.model.document import Document
 from frappe.utils import validate_email_add ,cint
 import imaplib,poplib,smtplib
@@ -38,7 +37,7 @@ class EmailDomain(Document):
 						test = poplib.POP3(self.email_server)
 
 			except Exception:
-				frappe.throw(_("Incoming email account not correct"))
+				frappe.throw("Incoming email account not correct")
 				return None
 			finally:
 				try:
@@ -53,8 +52,8 @@ class EmailDomain(Document):
 					self.port = 587
 				sess = smtplib.SMTP((self.smtp_server or "").encode('utf-8'), cint(self.smtp_port) or None)
 				sess.quit()
-			except Exception:
-				frappe.throw(_("Outgoing email account not correct"))
+			except Exception as e:
+				frappe.throw("Outgoing email account not correct")
 				return None
 		return
 

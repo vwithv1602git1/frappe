@@ -8,8 +8,6 @@ import frappe.model
 import frappe.utils
 import json, os
 
-from six import iteritems
-
 '''
 Handle RESTful requests that are mapped to the `/api/resource` route.
 
@@ -40,7 +38,7 @@ def get(doctype, name=None, filters=None):
 	if filters and not name:
 		name = frappe.db.get_value(doctype, json.loads(filters))
 		if not name:
-			frappe.throw(_("No document found for given filters"))
+			raise Exception, "No document found for given filters"
 
 	doc = frappe.get_doc(doctype, name)
 	if not doc.has_permission("read"):
@@ -230,7 +228,7 @@ def bulk_update(docs):
 	failed_docs = []
 	for doc in docs:
 		try:
-			ddoc = {key: val for key, val in iteritems(doc) if key not in ['doctype', 'docname']}
+			ddoc = {key: val for key, val in doc.iteritems() if key not in ['doctype', 'docname']}
 			doctype = doc['doctype']
 			docname = doc['docname']
 			doc = frappe.get_doc(doctype, docname)

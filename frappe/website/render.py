@@ -7,8 +7,6 @@ from frappe import _
 import frappe.sessions
 from frappe.utils import cstr
 import mimetypes, json
-
-from six import iteritems
 from werkzeug.wrappers import Response
 from werkzeug.routing import Map, Rule, NotFound
 
@@ -80,7 +78,7 @@ def build_response(path, data, http_status_code, headers=None):
 	response.headers[b"X-From-Cache"] = frappe.local.response.from_cache or False
 
 	if headers:
-		for key, val in iteritems(headers):
+		for key, val in headers.iteritems():
 			response.headers[bytes(key)] = val.encode("utf-8")
 
 	return response

@@ -14,15 +14,10 @@ frappe.provide("frappe.views");
 			cards: [],
 			columns: [],
 			filters_modified: false,
-			cur_list: {},
-			empty_state: true
+			cur_list: {}
 		},
 		actionCallbacks: {
 			init: function (updater, opts) {
-				updater.set({
-					empty_state: true
-				});
-
 				get_board(opts.board_name)
 					.then(function (board) {
 						var card_meta = get_card_meta(opts);
@@ -44,8 +39,7 @@ frappe.provide("frappe.views");
 							card_meta: card_meta,
 							cards: cards,
 							columns: columns,
-							cur_list: opts.cur_list,
-							empty_state: false
+							cur_list: opts.cur_list
 						});
 					})
 					.fail(function() {
@@ -125,7 +119,7 @@ frappe.provide("frappe.views");
 				}).then(function(r) {
 					saving_filters = false;
 					updater.set({ filters_modified: false });
-					frappe.show_alert({
+					show_alert({
 						message: __('Filters saved'),
 						indicator: 'green'
 					}, 0.5);
@@ -151,8 +145,8 @@ frappe.provide("frappe.views");
 				if (field && !quick_entry) {
 					return insert_doc(doc)
 						.then(function (r) {
-							var updated_doc = r.message;
-							var card = prepare_card(doc, state, updated_doc);
+							var doc = r.message;
+							var card = prepare_card(doc, state, doc);
 							var cards = state.cards.slice();
 							cards.push(card);
 							updater.set({ cards: cards });
@@ -275,7 +269,6 @@ frappe.provide("frappe.views");
 			prepare();
 			store.on('change:cur_list', setup_restore_columns);
 			store.on('change:columns', setup_restore_columns);
-			store.on('change:empty_state', show_empty_state);
 		}
 
 		function prepare() {
@@ -412,18 +405,6 @@ frappe.provide("frappe.views");
 			});
 		}
 
-		function show_empty_state() {
-			var empty_state = store.getState().empty_state;
-
-			if(empty_state) {
-				self.$kanban_board.find('.kanban-column').hide();
-				self.$kanban_board.find('.kanban-empty-state').show();
-			} else {
-				self.$kanban_board.find('.kanban-column').show();
-				self.$kanban_board.find('.kanban-empty-state').hide();
-			}
-		}
-
 		init();
 
 		return self;
@@ -532,12 +513,10 @@ frappe.provide("frappe.views");
 						// not already working -- double entry
 						e.preventDefault();
 						var card_title = $textarea.val();
-						fluxify.doAction('add_card', card_title, column.title)
-							.then(() => {
-								$btn_add.show();
-								$new_card_area.hide();
-								$textarea.val('');
-							});
+						fluxify.doAction('add_card', card_title, column.title);
+						$btn_add.show();
+						$new_card_area.hide();
+						$textarea.val('');
 					}
 				}
 			});
@@ -840,6 +819,37 @@ frappe.provide("frappe.views");
 			})
 		}
 
+		function edit_card_title_old() {
+
+			self.$card.find('.kanban-card-edit').on('click', function (e) {
+				e.stopPropagation();
+				$edit_card_area.show();
+				$kanban_card_area.hide();
+				$textarea.focus();
+			});
+
+			$textarea.on('blur', function () {
+				$edit_card_area.hide();
+				$kanban_card_area.show();
+			});
+
+			$textarea.keydown(function (e) {
+				if (e.which === 13) {
+					e.preventDefault();
+					var new_title = $textarea.val();
+					if (card.title === new_title) {
+						return;
+					}
+					get_doc().then(function () {
+						var tf = store.getState().card_meta.title_field.fieldname;
+						var doc = card.doc;
+						doc[tf] = new_title;
+						fluxify.doAction('update_doc', doc, card);
+					})
+				}
+			})
+		}
+
 		init();
 	}
 
@@ -1010,7 +1020,7 @@ frappe.provide("frappe.views");
 			},
 			callback: function (r) {
 				frappe.model.clear_doc(doc.doctype, doc.name);
-				frappe.show_alert({ message: __("Saved"), indicator: 'green' }, 1);
+				show_alert({ message: __("Saved"), indicator: 'green' }, 1);
 			}
 		});
 	}

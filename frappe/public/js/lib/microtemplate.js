@@ -82,7 +82,7 @@ frappe.render_template = function(name, data) {
 	if(data===undefined) {
 		data = {};
 	}
-	return frappe.render(template, data, name);
+	return frappe.render(frappe.templates[name], data, name);
 }
 frappe.render_grid = function(opts) {
 	// build context
@@ -93,8 +93,6 @@ frappe.render_grid = function(opts) {
 		} else if(opts.grid) {
 			opts.data = opts.grid.getData().getItems();
 		}
-	} else {
-		opts.columns = [];
 	}
 
 	// show landscape view if columns more than 10

@@ -103,11 +103,9 @@ frappe.ui.form.LinkedWith = class LinkedWith {
 		var me = this;
 		let links = null;
 
-		if (this.frm.__linked_doctypes) {
-			links =
-				Object.keys(this.frm.__linked_doctypes)
-				.filter(frappe.model.can_get_report);
-		}
+		links =
+			Object.keys(this.frm.__linked_doctypes)
+			.filter(frappe.model.can_get_report);
 
 		let flag;
 		if(!links) {

@@ -162,7 +162,7 @@ frappe.ui.toolbar.Toolbar = Class.extend({
 
 		function show_results(e) {
 			//edit links
-			var href = e.target.href;
+			href = e.target.href;
 			if(href.indexOf('blob') > 0) {
 				window.open(href, '_blank');
 			}
@@ -220,7 +220,7 @@ frappe.ui.toolbar.clear_cache = function() {
 	frappe.assets.clear_local_storage();
 	$c('frappe.sessions.clear',{},function(r,rt){
 		if(!r.exc) {
-			frappe.show_alert(r.message);
+			show_alert(r.message);
 			location.reload(true);
 		}
 	});
@@ -228,7 +228,7 @@ frappe.ui.toolbar.clear_cache = function() {
 }
 
 frappe.ui.toolbar.download_backup = function() {
-	frappe.msgprint(__("Your download is being built, this may take a few moments..."));
+	msgprint(__("Your download is being built, this may take a few moments..."));
 	$c('frappe.utils.backups.get_backup',{},function(r,rt) {});
 	return false;
 }

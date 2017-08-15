@@ -298,7 +298,7 @@ frappe.PermissionEngine = Class.extend({
 						r.message = $.map(r.message, function(p) {
 							return $.format('<a href="#Form/User/{0}">{1}</a>', [p, p]);
 						})
-						frappe.msgprint(__("Users with role {0}:", [__(role)])
+						msgprint(__("Users with role {0}:", [__(role)])
 							+ "<br>" + r.message.join("<br>"));
 					}
 				})
@@ -324,7 +324,7 @@ frappe.PermissionEngine = Class.extend({
 					},
 					callback: function(r) {
 						if(r.exc) {
-							frappe.msgprint(__("Did not remove"));
+							msgprint(__("Did not remove"));
 						} else {
 							me.refresh();
 						}
@@ -380,8 +380,7 @@ frappe.PermissionEngine = Class.extend({
 							options:me.options.roles, reqd:1,fieldname:"role"},
 						{fieldtype:"Select", label:__("Permission Level"),
 							options:[0,1,2,3,4,5,6,7,8,9], reqd:1, fieldname: "permlevel",
-							description: __("Level 0 is for document level permissions, \
-								higher levels for field level permissions.")}
+						description: __("Level 0 is for document level permissions, higher levels for field level permissions.")}
 					]
 				});
 				if(me.get_doctype()) {
@@ -405,7 +404,7 @@ frappe.PermissionEngine = Class.extend({
 						args: args,
 						callback: function(r) {
 							if(r.exc) {
-								frappe.msgprint(__("Did not add"));
+								msgprint(__("Did not add"));
 							} else {
 								me.refresh();
 							}
@@ -418,7 +417,6 @@ frappe.PermissionEngine = Class.extend({
 	},
 
 	show_user_permission_doctypes: function(d) {
-		var me = this;
 		if (!d.dialog) {
 			var fields = [];
 			for (var i=0, l=d.linked_doctypes.length; i<l; i++) {
@@ -478,9 +476,9 @@ frappe.PermissionEngine = Class.extend({
 					},
 					callback: function(r) {
 						if(r.exc) {
-							frappe.msgprint(__("Did not set"));
+							msgprint(__("Did not set"));
 						} else {
-							var msg = frappe.msgprint(__("Saved!"));
+							var msg = msgprint(__("Saved!"));
 							setTimeout(function() { msg.hide(); }, 3000);
 							d.user_permission_doctypes = user_permission_doctypes;
 							dialog.hide();

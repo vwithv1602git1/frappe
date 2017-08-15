@@ -17,7 +17,7 @@ frappe.ready(function() {
 			var reader = new FileReader();
 
 			if(input.files.length) {
-				var file = input.files[0];
+				file = input.files[0];
 				frappe.file_reading = true;
 				reader.onload = function(e) {
 					input.filedata = {
@@ -35,7 +35,8 @@ frappe.ready(function() {
 						// clear attachment
 						$(input).val('');
 						$(input).attr('data-value', '');
-					}
+
+					};
 					frappe.file_reading = false;
 				}
 
@@ -60,7 +61,7 @@ frappe.ready(function() {
 		var maxlength = parseInt($(this).attr('maxlength'));
 		if(maxlength && (($(this).val() || '') + '').length > maxlength-1) {
 			$(this).val($(this).val().substr(0, maxlength-1));
-		}
+		};
 	}).each(function() { set_mandatory_class(this); });
 
 	// if changed, set dirty flag
@@ -103,7 +104,7 @@ frappe.ready(function() {
 		return false;
 	});
 
-	var show_slide = function(idx) {
+	show_slide = function(idx) {
 		// hide all sections
 		$('.web-form-page').addClass('hidden');
 
@@ -174,7 +175,7 @@ frappe.ready(function() {
 
 					// check if child table has value
 					var has_value = false;
-					for(var key in d) {
+					for(key in d) {
 						if(typeof d[key]==='string') {
 							d[key] = d[key].trim();
 						}
@@ -280,22 +281,30 @@ frappe.ready(function() {
 			callback: function(data) {
 				if(!data.exc) {
 					frappe.doc_name = data.message;
-					$form.addClass("hide");
-					$(".comments, .introduction, .page-head").addClass("hide");
-					scroll(0, 0);
-					set_message(frappe.success_link, true);
+					if(!frappe.login_required) {
+						$form.addClass("hide");
+						$(".comments, .introduction, .page-head").addClass("hide");
+						scroll(0, 0);
+						set_message(frappe.success_link, true);
+                    } else {
+						set_message(__('Saved'));
+				    }
 
+					if(frappe.is_new && frappe.login_required) {
+						// reload page (with ID)
+						window.location.href = window.location.pathname + "?name=" + frappe.doc_name;
+					}
 					if(for_payment && data.message) {
 						// redirect to payment
 						window.location.href = data.message;
 					}
-				} else {
+			    } else {
 					frappe.msgprint(__('There were errors. Please report this.'));
-				}
-			},
-			always: function() {
-				window.saving = false;
-			}
+			    }
+		    },
+            always: function() {
+                window.saving = false;
+            }
 		});
 		return true;
 	}

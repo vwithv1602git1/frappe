@@ -8,16 +8,16 @@ frappe.ready(function() {
 		var message = $('[name="message"]').val();
 
 		if(!(email && message)) {
-			frappe.msgprint("{{ _("Please enter both your email and message so that we \
-				can get back to you. Thanks!") }}");
+			msgprint(__("Please enter both your email and message so that we \
+				can get back to you. Thanks!"));
 			return false;
 		}
 
-		if(!validate_email(email)) {
-			frappe.msgprint("{{ _("You seem to have written your name instead of your email. \
-				Please enter a valid email address so that we can get back.") }}");
-			$('[name="email"]').focus();
-			return false;
+		if(!valid_email(email)) {
+				msgprint(__("You seem to have written your name instead of your email. \
+					Please enter a valid email address so that we can get back."));
+				$('[name="email"]').focus();
+				return false;
 		}
 
 		$("#contact-alert").toggle(false);
@@ -27,15 +27,15 @@ frappe.ready(function() {
 			message: message,
 			callback: function(r) {
 				if(r.message==="okay") {
-					frappe.msgprint("{{ _("Thank you for your message") }}");
+					msgprint(__("Thank you for your message"));
 				} else {
-					frappe.msgprint("{{ _("There were errors") }}");
+					msgprint(__("There were errors"));
 					console.log(r.exc);
 				}
 				$(':input').val('');
 			}
 		}, this);
-		return false;
+	return false;
 	});
 
 });

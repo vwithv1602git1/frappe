@@ -5,16 +5,9 @@
 
 from __future__ import unicode_literals
 import frappe
-import requests
-import socket
 
 from frappe.model.document import Document
 from frappe import _
-
-try:
-	from urllib.parse import urlparse
-except ImportError:
-	from urlparse import urlparse
 
 class SocialLoginKeys(Document):
 	def validate(self):
@@ -24,16 +17,10 @@ class SocialLoginKeys(Document):
 		if self.frappe_server_url:
 			if self.frappe_server_url.endswith('/'):
 				self.frappe_server_url = self.frappe_server_url[:-1]
-
+			import requests
 			try:
-				frappe_server_hostname = urlparse(self.frappe_server_url).netloc
+				r = requests.get(self.frappe_server_url + "/api/method/frappe.handler.version", timeout=5)
 			except:
+				frappe.throw(_("Unable to make request to the Frappe Server URL"))
+			if r.status_code != 200:
 				frappe.throw(_("Check Frappe Server URL"))
-
-			if socket.gethostname() != frappe_server_hostname or \
-				(frappe.local.conf.domains is not None) and \
-				(frappe_server_hostname not in frappe.local.conf.domains):
-				try:
-					requests.get(self.frappe_server_url + "/api/method/frappe.handler.version", timeout=5)
-				except:
-					frappe.throw(_("Unable to make request to the Frappe Server URL"))

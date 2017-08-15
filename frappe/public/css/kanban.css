@@ -125,10 +125,6 @@
   width: 16px;
   height: 16px;
 }
-.kanban .kanban-empty-state {
-  width: 100%;
-  line-height: 400px;
-}
 body[data-route*="Kanban"] .modal .add-assignment:hover i {
   color: #36414C !important;
 }

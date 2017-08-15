@@ -74,7 +74,7 @@ frappe.ui.FieldGroup = frappe.ui.form.Layout.extend({
 			}
 		}
 		if(errors.length && !ignore_errors) {
-			frappe.msgprint({
+			msgprint({
 				title: __('Missing Values Required'),
 				message: __('Following fields have missing values:') +
 					'<br><br><ul><li>' + errors.join('<li>') + '</ul>',
@@ -106,7 +106,7 @@ frappe.ui.FieldGroup = frappe.ui.form.Layout.extend({
 		}
 	},
 	clear: function() {
-		for(var key in this.fields_dict) {
+		for(key in this.fields_dict) {
 			var f = this.fields_dict[key];
 			if(f && f.set_input) {
 				f.set_input(f.df['default'] || '');

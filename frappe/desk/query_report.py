@@ -120,8 +120,6 @@ def export_query():
 	data = frappe._dict(frappe.local.form_dict)
 
 	del data["cmd"]
-	if "csrf_token" in data:
-		del data["csrf_token"]
 
 	if isinstance(data.get("filters"), basestring):
 		filters = json.loads(data["filters"])
@@ -148,17 +146,18 @@ def export_query():
 			
 		# build table from dict
 		if isinstance(data.result[0], dict):
-			for i,row in enumerate(data.result):
-				# only rows which are visible in the report
-				if row and (i+1 in visible_idx):
+			for row in data.result:
+				if row:
 					row_list = []
 					for idx in range(len(data.columns)):
 						row_list.append(row.get(columns[idx]["fieldname"],""))
 					result.append(row_list)
-				elif not row:
-					result.append([])
 		else:
 			result = result + data.result
+		
+		# filter rows by slickgrid's inline filter
+		if visible_idx:
+			result = [x for idx, x in enumerate(result) if idx == 0 or idx in visible_idx]
 
 		from frappe.utils.xlsxutils import make_xlsx
 		xlsx_file = make_xlsx(result, "Query Report")
@@ -288,7 +287,7 @@ def has_match(row, linked_doctypes, doctype_match_filters, ref_doctype, if_owner
 					if dt=="User" and columns_dict[idx]==columns_dict.get("owner"):
 						continue
 
-					if dt in match_filters and row[idx] not in match_filters[dt] and frappe.db.exists(dt, row[idx]):
+					if dt in match_filters and row[idx] not in match_filters[dt]:
 						match = False
 						break
 

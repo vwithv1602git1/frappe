@@ -45,7 +45,7 @@ frappe.assets = {
 		});
 
 		// clear assets
-		for(var key in localStorage) {
+		for(key in localStorage) {
 			if(key.indexOf("desk_assets:")===0 || key.indexOf("_page:")===0
 				|| key.indexOf("_doctype:")===0 || key.indexOf("preferred_breadcrumbs:")===0) {
 				localStorage.removeItem(key);

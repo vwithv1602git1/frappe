@@ -2,10 +2,8 @@
 # MIT License. See license.txt
 
 from __future__ import unicode_literals
-
-import zxcvbn
-import frappe
 from frappe import _
+import zxcvbn
 
 def test_password_strength(password, user_inputs=None):
 	'''Wrapper around zxcvbn.password_strength'''
@@ -37,14 +35,12 @@ def get_feedback (score, sequence):
 	"""
 	Returns the feedback dictionary consisting of ("warning","suggestions") for the given sequences.
 	"""
-	minimum_password_score = frappe.db.get_single_value("System Settings", "minimum_password_score")
-
 	global default_feedback
 	# Starting feedback
 	if len(sequence) == 0:
 		return default_feedback
 	# No feedback if score is good or great
-	if score >= minimum_password_score:
+	if score > 2:
 		return dict({"warning": "","suggestions": []})
 	# Tie feedback to the longest match for longer sequences
 	longest_match = max(sequence, key=lambda x: len(x['token']))
@@ -136,9 +132,7 @@ def get_match_feedback(match, is_sole_match):
 		"date": fun_date,
 		"year": fun_date
 	}
-	pattern_fn = patterns.get(match['pattern'])
-	if pattern_fn:
-		return(pattern_fn())
+	return(patterns[match['pattern']]())
 
 def get_dictionary_match_feedback(match, is_sole_match):
 	"""

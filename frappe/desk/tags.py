@@ -84,6 +84,7 @@ class DocTags:
 	def remove(self, dn, tag):
 		"""remove a user tag"""
 		tl = self.get_tags(dn).split(',')
+		print(tag, filter(lambda x:x!=tag, tl))
 		self.update(dn, filter(lambda x:x.lower()!=tag.lower(), tl))
 
 	def remove_all(self, dn):

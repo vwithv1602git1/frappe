@@ -73,7 +73,7 @@ frappe.ui.form.States = Class.extend({
 		}
 
 		$.each(frappe.workflow.get_transitions(this.frm.doctype, state), function(i, d) {
-			if(frappe.user_roles.includes(d.allowed)) {
+			if(in_list(roles, d.allowed)) {
 				added = true;
 				me.frm.page.add_action_item(__(d.action), function() {
 					var action = d.action;
@@ -112,10 +112,10 @@ frappe.ui.form.States = Class.extend({
 					} else if(new_docstatus==2 && me.frm.doc.docstatus==1) {
 						me.frm.savecancel(null, success, on_error);
 					} else {
-						frappe.msgprint(__("Document Status transition from ") + me.frm.doc.docstatus + " "
+						msgprint(__("Document Status transition from ") + me.frm.doc.docstatus + " "
 							+ __("to") +
 							new_docstatus + " " + __("is not allowed."));
-						frappe.msgprint(__("Document Status transition from {0} to {1} is not allowed", [me.frm.doc.docstatus, new_docstatus]));
+						msgprint(__("Document Status transition from {0} to {1} is not allowed", [me.frm.doc.docstatus, new_docstatus]));
 						return false;
 					}
 
